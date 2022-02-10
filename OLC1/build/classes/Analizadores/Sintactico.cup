@@ -1,0 +1,41 @@
+package Analizadores;
+
+import java_cup.runtime.*;
+
+parser code {:
+
+    //-----------------------errores--------------------------------------------
+     public void syntax_error(Symbol s)
+    {
+        System.err.println("Error en la Linea " + (s.right+1) +" Columna "+(s.left+1)+ ". Identificador "+s.value + " no reconocido. Se ha recuperado del error." );
+        Errores nuevoe = new Errores("Tipo Sintactico (Recuperado)", s.value.toString(), s.right+1, s.left+1);
+        Interfaz.listaErrores.add(nuevoe);
+    }
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+    {
+        System.err.println("Error en la Linea " + (s.right+1)+ " Columna "+(s.left+1)+". Identificador " +s.value + " no reconocido.");
+        Errores nuevoe = new Errores("Tipo Sintactico", s.value.toString(), s.right+1, s.left+1);
+        Interfaz.listaErrores.add(nuevoe);
+    }
+    //--------------------------------------------------------------------------
+
+:}
+
+//terminales
+
+terminal String identificador, entero, cadena, especial_c, cadena_num, cadena_min, cadena_mayus;
+  
+terminal String conj, trazo, dos_puntos, guion, mayor, menor, punto_coma;//7
+terminal String guion_bajo, coma, comilla_doble, exclamacion, numeral, dolar;//13
+terminal String amperstand, comilla_simple, parentesis_aper, parentesis_cierre; //17
+terminal String mas, porcentaje, asterisco, backslash, igual, interrogacion; //23
+terminal String arroba, corchete_aper, corchete_cierre, potencia, acento; //28
+terminal String barra_or, llave_aper, llave_cierre, punto;// 32
+
+
+//no terminales
+
+non terminal INICIO;
+non terminal nodo EXPRESION;
+
+start with INICIO;
