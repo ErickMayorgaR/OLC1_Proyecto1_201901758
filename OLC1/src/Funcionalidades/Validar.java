@@ -9,11 +9,11 @@ package Funcionalidades;
  *
  * @author emayo
  */
-public class Entrada {
+public class Validar {
     String expresion;
     String cadena;
 
-    public Entrada(String expresion, String cadena) {
+    public Validar(String expresion, String cadena) {
         this.expresion = expresion;
         this.cadena = cadena;
     }

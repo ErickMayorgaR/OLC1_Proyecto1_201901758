@@ -55,7 +55,7 @@ comentario_multi_l = ("<""!"[^\!]*"!"">"
 {comentario_multi_l} {}
 
 //elemtento,                               linea, columna, lexema
-"CONJ" {return new Symbol(sym.CONJ,yyline,yychar,yytext());}
+"CONJ" {return new Symbol(sym.conj,yyline,yychar,yytext());}
 "~" {return new Symbol(sym.trazo,yyline,yychar,yytext());}
 ":" {return new Symbol(sym.dos_puntos,yyline,yychar,yytext());}
 "-" {return new Symbol(sym.guion,yyline,yychar,yytext());}
@@ -96,7 +96,8 @@ comentario_multi_l = ("<""!"[^\!]*"!"">"
 {especial_c} {return new Symbol(sym.especial_c,yyline,yychar,yytext());}
 {cadena_num} {return new Symbol(sym.cadena_num,yyline,yychar,yytext());}
 {cadena_min} {return new Symbol(sym.cadena_min,yyline,yychar,yytext());}
-{cadena)mayus} {return new Symbol(sym.cadena_mayus,yyline,yychar,yytext());}
+{cadena_mayus} {return new Symbol(sym.cadena_mayus,yyline,yychar,yytext());}
+{nombre_expresion} {return new Symbol(sym.nombre_expresion,yyline,yychar,yytext());}
 
 .   {
 	    System.err.println("Error lexico: "+yytext()+ " Linea:"+(yyline)+" Columna:"+(yychar));

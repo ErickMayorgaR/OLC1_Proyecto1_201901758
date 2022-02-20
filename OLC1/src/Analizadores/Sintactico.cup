@@ -1,8 +1,22 @@
 package Analizadores;
 
 import java_cup.runtime.*;
+import Funcionalidades.*;
+import java.util.ArrayList;
+
 
 parser code {:
+
+public ArrayList<Arbol> arboles = new ArrayList<Arbol>();
+public ArrayList<String> id_conjunto = New ArrayList<String>();
+public ArrayList<String> e_conjuntos = newArrayList<String>();
+public int contador = 0;
+public int contador_hoja = 1;
+
+public Arbol crear_arbol(String nombre, Nodo raiz){
+    return new Arbol(nombre, new Nodo(raiz, new Nodo(contador,"#",contador_hoja),contador+1,".",contador_hoja));
+}
+
 
     //-----------------------errores--------------------------------------------
      public void syntax_error(Symbol s)
@@ -23,7 +37,7 @@ parser code {:
 
 //terminales
 
-terminal String identificador, entero, cadena, especial_c, cadena_num, cadena_min, cadena_mayus;
+terminal String identificador, entero, cadena, especial_c, cadena_num, cadena_min, cadena_mayus, nombre_expresion;
   
 terminal String conj, trazo, dos_puntos, guion, mayor, menor, punto_coma;//7
 terminal String guion_bajo, coma, comilla_doble, exclamacion, numeral, dolar;//13
@@ -37,5 +51,40 @@ terminal String barra_or, llave_aper, llave_cierre, punto;// 32
 
 non terminal INICIO;
 non terminal nodo EXPRESION;
+non terminal String PARTE1 PARTE2;
+
 
 start with INICIO;
+
+INICIO::= llave_aper PARTE1 porcentaje porcentaje porcentaje porcentaje PARTE2 llave_cierre {:System.out.println("Funciono);:};
+
+PARTE1::= PARTE1 CONJUNTO;
+           |PARTE1 LINEAEXPRESION;
+           |CONJUNTO
+           |LINEAEXPRESION
+           |error;
+
+PARTE2::= PARTE2 VALIDAR 
+           |VALIDAR
+           |error;
+
+CONJUNTO::= conj dos_puntos identificador:var1 guion mayor DESCRPCONJUNTO punto_coma {:RESULT = parser.id_conjunto.add(var1);:};
+            |conj dos_puntos identificador:var1 guion mayor LISTA:var2 
+
+
+LINEAEXPRESION::= identificador:var1 guion mayor EXPRESION:var2 punto_coma {:parser.arboles.add(parser.crear_arbol(var1,var2));:};
+
+EXPRESION::= punto EXPRESION:var1 EXPRESION:var2         {:RESULT= new Nodo(var1,var2,parser.contador++,".",parser.contador_hoja);:};
+            |barra_or EXPRESION:var1 EXPRESION:var2      {:RESULT = new Nodo(var1,var2,parser.contador++,"|"parser.contador_hoja);:};
+            |mas EXPRESION:var1                          {:RESULT = new Nodo(var1,null,parser.contador++,"+",parser.contador_hoja);:};           
+            |asterisco ESPRESION:var1                    {:RESULT = new Nodo(var1,null,parser.contador++,"+",parser.contador_hoja);:};
+            |interrogacion EXPRESION:var1                {:RESULT = new Nodo(var1,null,parser.contador++,"+",parser.contador_hoja);:};
+            |nombre_expresion:var1                       {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
+            |cadena:var1                                 {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
+            |entero:var1                                 {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
+            |especial_c:var1                             {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
+            |llave_aper identificador:var1 llave_cierre  {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
+            |especial_c:var1                             {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
+            
+
+

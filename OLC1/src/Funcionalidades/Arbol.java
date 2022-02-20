@@ -10,5 +10,14 @@ package Funcionalidades;
  * @author emayo
  */
 public class Arbol {
+    public Nodo raiz;
+    public String nombre;
+
+    public Arbol(Nodo raiz, String nombre) {
+        this.raiz = raiz;
+        this.nombre = nombre;
+    }
+    
+    
     
 }
