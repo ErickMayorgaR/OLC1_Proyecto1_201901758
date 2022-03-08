@@ -9,13 +9,13 @@ package Funcionalidades;
  *
  * @author emayo
  */
-public class Error {
+public class Error_ {
     public String tipo;
     public String valor; 
     public int fila;
     public int columna;
 
-    public Error(String tipo, String valor, int fila, int columna) {
+    public Error_(String tipo, String valor, int fila, int columna) {
         this.tipo = tipo;
         this.valor = valor;
         this.fila = fila;

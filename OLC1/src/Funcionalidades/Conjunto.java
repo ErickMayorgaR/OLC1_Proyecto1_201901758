@@ -13,9 +13,9 @@ import java.util.ArrayList;
  */
 public class Conjunto {
     public String identificador;
-    public ArrayList<Character> elementos; 
+    public String elementos; 
 
-    public Conjunto(String identificador, ArrayList<Character> elementos) {
+    public Conjunto(String identificador, String elementos) {
         this.identificador = identificador;
         this.elementos = elementos;
     }

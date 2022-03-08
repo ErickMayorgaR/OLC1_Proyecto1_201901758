@@ -27,14 +27,117 @@ public class Nodo {
         this.id = id;
         this.valor = valor;
         this.id_hoja = id_hoja;
+        this.primeros = new ArrayList<>();
+        this.ultimos = new ArrayList<>();
+        ValidarReglas();
     }
 
     public Nodo(int id, String valor, int id_hoja) {
         this.id = id;
         this.valor = valor;
         this.id_hoja = id_hoja;
+        this.hoja_der = null;
+        this.hoja_izq = null;
+        this.primeros = new ArrayList<>();
+        this.ultimos = new ArrayList<>();
+        ValidarReglas();
+    }
+    
+    private void ValidarReglas(){
+        ReglaHoja();
+        ReglaExpr();
+    }
+    
+    public void ReglaHoja(){
+         if((this.hoja_der == null) && (this.hoja_izq== null)){
+        this.anulable = false;
+        this.primeros.add(this.id_hoja);
+        this.ultimos.add(this.id_hoja);
+        }
+    }
+    
+    public void ReglaExpr(){
+        Anulabilidad();
+        PrimerosUltimos();
+       
+    }
+    
+    public void Anulabilidad(){
+         switch (this.valor) {
+            case "*" -> {
+                this.anulable = true;
+            }
+            case "+" -> {
+                if (!this.hoja_izq.anulable) {
+                    this.anulable = false;
+                } else {
+                    this.anulable = true;
+                }
+            }
+            case "?" -> {
+                this.anulable = true;
+            }
+            case "|" -> {
+                this.anulable = (this.hoja_izq.anulable == true) || (this.hoja_der.anulable == true);
+            }
+            case "." -> {
+                this.anulable = (this.hoja_izq.anulable == true) && (this.hoja_der.anulable == true);
+            }
+        }
+    }
+    
+    public void PrimerosUltimos(){
+        switch (this.valor) {
+            case "*","+","?" -> {
+                this.primeros.addAll(this.hoja_izq.primeros);
+                this.ultimos.addAll(this.hoja_izq.ultimos);
+            }           
+            case "|" -> {
+                this.primeros.addAll(this.hoja_izq.primeros);
+                this.primeros.addAll(this.hoja_der.primeros);
+                
+                this.ultimos.addAll(this.hoja_izq.ultimos);
+                this.ultimos.addAll(this.hoja_der.ultimos);
+            }
+            case "." -> {
+                if(this.hoja_izq.anulable){
+                    this.primeros.addAll(this.hoja_der.primeros);
+                    this.primeros.addAll(this.hoja_izq.primeros);
+                    
+                   
+                }else{
+                    this.primeros.addAll(this.hoja_izq.primeros);
+                }
+                if(this.hoja_der.anulable){
+                     this.ultimos.addAll(this.hoja_izq.ultimos);
+                     this.ultimos.addAll(this.hoja_der.ultimos);
+                }else{
+                     this.ultimos.addAll(this.hoja_der.ultimos);
+                }
+            }
+        }
+    }
+    
+    public String obtenerCodigoNodo(){
+        String codigoNodo= "";
+        String valor_ = ("|".equals(this.valor) || "\"".equals(this.valor))? "\\" + this.valor:valor;
+        if(this.valor.contains("\"")){
+            valor_ = valor.replaceAll("\"", "");
+        }
+        
+        codigoNodo = "nodo" + id + "[shape=record label =\""+ this.primeros.toString() +"|{"+ this.anulable + "|"+ valor_ + "| id:" + this.id_hoja + "}|" + this.ultimos.toString() +"\"" + "]\n";
+        
+        
+        if(this.hoja_izq != null){
+            codigoNodo += this.hoja_izq.obtenerCodigoNodo()+ "nodo" +this.id + "->nodo"+ this.hoja_izq.id +";\n";
+        }
+        if(this.hoja_der != null){
+            codigoNodo += this.hoja_der.obtenerCodigoNodo()+ "nodo" +this.id + "->nodo"+ this.hoja_der.id +";\n";
+        }
+        return codigoNodo;
     }
 
+    
     public Nodo getHoja_izq() {
         return hoja_izq;
     }
@@ -97,9 +200,5 @@ public class Nodo {
 
     public void setId_hoja(int id_hoja) {
         this.id_hoja = id_hoja;
-    }
-    
-    
-    
-    
+    } 
 }

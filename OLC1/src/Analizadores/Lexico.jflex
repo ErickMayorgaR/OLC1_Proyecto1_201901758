@@ -1,7 +1,8 @@
 package Analizadores;
 
 import java_cup.runtime.*;
-import ocl.funcionalidades.*;
+import Funcionalidades.*;
+import olc1.*;
 
 
 
@@ -19,85 +20,85 @@ import ocl.funcionalidades.*;
 %init{
     yyline = 1;
     yychar = 1;
-}
-%%
+%init}
 
 
-blancos = [ \r\t]+
-// espacio en blanco \r = retorno de carro \t = tab 
-letra = [a-zA-Z]
-entero = [0-9]+
-cadena = "\""[^\"]+"\""
-especial_c = ("\\""n"|"\\""\'"|"\\""\"") //\n \' y \"
-identificador = {letra}({letra}|"_"|{entero})*
-cadena_num = [0-9]"~"[0-9]
-cadena_min = [a-z]"~"[a-z]
-cadena_mayus =[A-Z]"~"[A-Z]
-nombre_expresion = \"[A-Z]|[a-z]|[0-9]\"
 
-
-comentario_linea = ("//".*\n)|("//".*\r)    
-comentario_multi_l = ("<""!"[^\!]*"!"">"  
+BLANCOS=[ \r\t]+
+LETRA=[a-zA-Z]
+ENTERO = [0-9]+
+CADENA = "\""[^\"]+"\""
+ESPECIALC = ("\\""n"|"\\""\'"|"\\""\"")
+IDENTIFICADOR = {LETRA}({LETRA}|"_"|{ENTERO})*
+CADENANUM = [0-9]"~"[0-9]
+CADENAMIN = [a-z]"~"[a-z]
+CADENAMAYUS =[A-Z]"~"[A-Z]
+CADENAVAR  = [ -}]"~"[ -}]
+NOMBREEXPRESION = \"[A-Z]|[a-z]|[0-9]\"
+COMENTARIOLINEA= ("//".*\n)|("//".*\r)    
+COMENTARIOMULTIL = "<!""!"*([^!>]|[^!]">"|"!"[^>])*"!"*"!>"  
 
 %{
     public void agregar_error(String tipo, String lexema, int fila, int columna)
     {
-        Error un_error = new Error(tipo, lexema, fila+1, columna+1);
-        Interface.Lista_Errores.add(un_error);
+        Error_ un_error = new Error_(tipo, lexema, fila+1, columna+1);
+        Interfaz.listaErrores.add(un_error);
     }
 %}
+
 %%
 
+{BLANCOS}               {}
+{COMENTARIOLINEA}      {}
+{COMENTARIOMULTIL}    {}
 
 
-{blancos} {}
-{comentario_linea} {}
-{comentario_multi_l} {}
-
-//elemtento,                               linea, columna, lexema
 "CONJ" {return new Symbol(sym.conj,yyline,yychar,yytext());}
 "~" {return new Symbol(sym.trazo,yyline,yychar,yytext());}
-":" {return new Symbol(sym.dos_puntos,yyline,yychar,yytext());}
+":" {return new Symbol(sym.dospuntos,yyline,yychar,yytext());}
 "-" {return new Symbol(sym.guion,yyline,yychar,yytext());}
 ">" {return new Symbol(sym.mayor,yyline,yychar,yytext());} //5
 "<" {return new Symbol(sym.menor,yyline,yychar,yytext());}
-";" {return new Symbol(sym.punto_coma,yyline,yychar,yytext());}
-"_" {return new Symbol(sym.guion_bajo,yyline,yychar,yytext());}
+";" {return new Symbol(sym.puntocoma,yyline,yychar,yytext());}
+"_" {return new Symbol(sym.guionbajo,yyline,yychar,yytext());}
 "," {return new Symbol(sym.coma,yyline,yychar,yytext());}
-"\"" {return new Symbol(sym.comilla_doble,yyline,yychar,yytext());} //10
+"\"" {return new Symbol(sym.comilladoble,yyline,yychar,yytext());} //10
 "!" {return new Symbol(sym.exclamacion,yyline,yychar,yytext());}
 "#" {return new Symbol(sym.numeral,yyline,yychar,yytext());}
 "$" {return new Symbol(sym.dolar,yyline,yychar,yytext());}
 "&" {return new Symbol(sym.ampersand,yyline,yychar,yytext());}
-"'" {return new Symbol(sym.comilla_simple,yyline,yychar,yytext());} //15
-"(" {return new Symbol(sym.parentesis_aper,yyline,yychar,yytext());}
-")" {return new Symbol(sym.parentesis_cierre,yyline,yychar,yytext());}
+"'" {return new Symbol(sym.comillasimple,yyline,yychar,yytext());} //15
+"(" {return new Symbol(sym.parentesisaper,yyline,yychar,yytext());}
+")" {return new Symbol(sym.parentesiscierre,yyline,yychar,yytext());}
 "+" {return new Symbol(sym.mas,yyline,yychar,yytext());}
 "%" {return new Symbol(sym.porcentaje,yyline,yychar,yytext());}
 "*" {return new Symbol(sym.asterisco ,yyline,yychar,yytext());} //20
-"\" {return new Symbol(sym.backslash,yyline,yychar,yytext());}
+"/" {return new Symbol(sym.slash,yyline,yychar,yytext());}
 "=" {return new Symbol(sym.igual,yyline,yychar,yytext());}
 "?" {return new Symbol(sym.interrogacion,yyline,yychar,yytext());}
 "@" {return new Symbol(sym.arroba,yyline,yychar,yytext());}
-"[" {return new Symbol(sym.corchete_aper,yyline,yychar,yytext());} //25
-"]" {return new Symbol(sym.corchete_cierre,yyline,yychar,yytext());}
+"[" {return new Symbol(sym.corcheteaper,yyline,yychar,yytext());} //25
+"]" {return new Symbol(sym.corchetecierre,yyline,yychar,yytext());}
 "^" {return new Symbol(sym.potencia,yyline,yychar,yytext());}
 "`" {return new Symbol(sym.acento,yyline,yychar,yytext());}
-"|" {return new Symbol(sym.barra_or,yyline,yychar,yytext());}
-"{" {return new Symbol(sym.llave_aper,yyline,yychar,yytext());} //30
-"}" {return new Symbol(sym.llave_cierre,yyline,yychar,yytext());}
+"|" {return new Symbol(sym.barraor,yyline,yychar,yytext());}
+"{" {return new Symbol(sym.llaveaper,yyline,yychar,yytext());} //30
+"}" {return new Symbol(sym.llavecierre,yyline,yychar,yytext());}
 "." {return new Symbol(sym.punto,yyline,yychar,yytext());}
 
 
 \n {yychar=1;}
-{identificador} {return new Symbol(sym.identificador,yyline,yychar,yytext());}
-{entero} {return new Symbol(sym.entero,yyline,yychar,yytext());}
-{cadena} {return new Symbol(sym.cadena,yyline,yychar,yytext());}
-{especial_c} {return new Symbol(sym.especial_c,yyline,yychar,yytext());}
-{cadena_num} {return new Symbol(sym.cadena_num,yyline,yychar,yytext());}
-{cadena_min} {return new Symbol(sym.cadena_min,yyline,yychar,yytext());}
-{cadena_mayus} {return new Symbol(sym.cadena_mayus,yyline,yychar,yytext());}
-{nombre_expresion} {return new Symbol(sym.nombre_expresion,yyline,yychar,yytext());}
+
+{LETRA}                 {return new Symbol(sym.letra,yycolumn, yyline, yytext());}
+{IDENTIFICADOR} {return new Symbol(sym.identificador,yyline,yychar,yytext());}
+{ENTERO} {return new Symbol(sym.entero,yyline,yychar,yytext());}
+{CADENA} {return new Symbol(sym.cadena,yyline,yychar,yytext());}
+{ESPECIALC} {return new Symbol(sym.especialc,yyline,yychar,yytext());}
+{CADENANUM} {return new Symbol(sym.cadenanum,yyline,yychar,yytext());}
+{CADENAMIN} {return new Symbol(sym.cadenamin,yyline,yychar,yytext());}
+{CADENAMAYUS} {return new Symbol(sym.cadenamayus,yyline,yychar,yytext());}
+{NOMBREEXPRESION} {return new Symbol(sym.nombreexpresion,yyline,yychar,yytext());}
+{CADENAVAR} {return new Symbol(sym.cadenavar,yyline,yychar,yytext());}
 
 .   {
 	    System.err.println("Error lexico: "+yytext()+ " Linea:"+(yyline)+" Columna:"+(yychar));

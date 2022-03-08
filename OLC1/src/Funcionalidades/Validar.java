@@ -10,20 +10,20 @@ package Funcionalidades;
  * @author emayo
  */
 public class Validar {
-    String expresion;
+    String entrada;
     String cadena;
 
     public Validar(String expresion, String cadena) {
-        this.expresion = expresion;
+        this.entrada = expresion;
         this.cadena = cadena;
     }
 
     public String getExpresion() {
-        return expresion;
+        return entrada;
     }
 
     public void setExpresion(String expresion) {
-        this.expresion = expresion;
+        this.entrada = expresion;
     }
 
     public String getCadena() {

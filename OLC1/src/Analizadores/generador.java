@@ -20,17 +20,16 @@ public class generador {
     }
     
     private static void Generar_Analizador(){
-        
         try{
-            String ruta = "src/Analizador/";
+            String ruta = "src/Analizadores/";
             String opcFlex[] = {ruta + "Lexico.jflex", "-d", ruta};
             jflex.Main.generate(opcFlex);
             
-            String opcCUP[] = {"-destdir", ruta, "-parser", "sintactico", ruta + "Sintactico.cup"};
+            String opcCUP[] = {"-destdir", ruta, "-parser", "parser", ruta + "Sintactico.cup"};
             java_cup.Main.main(opcCUP);
-            
-        }catch (Exception e){
+        }catch(Exception e){
             e.printStackTrace();
         }
+        
     }
 }

@@ -5,8 +5,6 @@
  */
 package olc1;
 
-import olc1.Interfaz;
-
 /**
  *
  * @author emayo

@@ -5,10 +5,18 @@
  */
 package Funcionalidades;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author emayo
  */
-public class Transiciones {
+public class Transicion {
+    public int idTransicion;
+    public String valorTransicion;
+    public int estadoObjetivo;
+    
+    public Transicion(){
+    }
     
 }

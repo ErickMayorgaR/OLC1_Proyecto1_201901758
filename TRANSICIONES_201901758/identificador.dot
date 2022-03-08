@@ -1,0 +1,13 @@
+digraph G{
+node [ shape=none]
+tbl [label=<
+ <TABLE>
+  <TR>
+<TD colspan = "1" rowspan = "2">Estado</TD>
+
+<TD colspan = " 4" >Terminales</TD>
+</TR>
+<tr><td>abecedarioMinus</td><td>"_"</td><td>digito</td></tr><tr><td> S0</td><td> S1</td><td>--</td><td>--</td> </tr><tr><td> S1</td><td> S1</td><td> S1</td><td> S1</td> </tr>
+</TABLE>
+>];
+}

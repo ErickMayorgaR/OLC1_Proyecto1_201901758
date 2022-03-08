@@ -3,17 +3,22 @@ package Analizadores;
 import java_cup.runtime.*;
 import Funcionalidades.*;
 import java.util.ArrayList;
+import olc1.*;
 
 
-parser code {:
+parser code
+{:
 
 public ArrayList<Arbol> arboles = new ArrayList<Arbol>();
-public ArrayList<String> id_conjunto = New ArrayList<String>();
-public ArrayList<String> e_conjuntos = newArrayList<String>();
+public ArrayList<String> id_conjunto = new ArrayList<String>();
+public ArrayList<String> e_conjuntos = new ArrayList<String>();
+public ArrayList<Conjunto> conjuntos = new ArrayList<Conjunto>();
+public ArrayList<Validar> lista_validar = new ArrayList<Validar>();
 public int contador = 0;
 public int contador_hoja = 1;
 
 public Arbol crear_arbol(String nombre, Nodo raiz){
+    
     return new Arbol(nombre, new Nodo(raiz, new Nodo(contador,"#",contador_hoja),contador+1,".",contador_hoja));
 }
 
@@ -22,69 +27,80 @@ public Arbol crear_arbol(String nombre, Nodo raiz){
      public void syntax_error(Symbol s)
     {
         System.err.println("Error en la Linea " + (s.right+1) +" Columna "+(s.left+1)+ ". Identificador "+s.value + " no reconocido. Se ha recuperado del error." );
-        Errores nuevoe = new Errores("Tipo Sintactico (Recuperado)", s.value.toString(), s.right+1, s.left+1);
+        Error_ nuevoe = new Error_("Tipo Sintactico (Recuperado)", s.value.toString(), s.right+1, s.left+1);
         Interfaz.listaErrores.add(nuevoe);
     }
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
     {
         System.err.println("Error en la Linea " + (s.right+1)+ " Columna "+(s.left+1)+". Identificador " +s.value + " no reconocido.");
-        Errores nuevoe = new Errores("Tipo Sintactico", s.value.toString(), s.right+1, s.left+1);
+        if(s.value!=null){
+        Error_ nuevoe = new Error_("Tipo Sintactico", s.value.toString(), s.right+1, s.left+1);
         Interfaz.listaErrores.add(nuevoe);
+}
     }
     //--------------------------------------------------------------------------
 
 :}
 
-//terminales
 
-terminal String identificador, entero, cadena, especial_c, cadena_num, cadena_min, cadena_mayus, nombre_expresion;
+
+terminal String identificador, entero, cadena, especialc, cadenanum, cadenamin, cadenamayus, cadenavar, nombreexpresion;
   
-terminal String conj, trazo, dos_puntos, guion, mayor, menor, punto_coma;//7
-terminal String guion_bajo, coma, comilla_doble, exclamacion, numeral, dolar;//13
-terminal String amperstand, comilla_simple, parentesis_aper, parentesis_cierre; //17
-terminal String mas, porcentaje, asterisco, backslash, igual, interrogacion; //23
-terminal String arroba, corchete_aper, corchete_cierre, potencia, acento; //28
-terminal String barra_or, llave_aper, llave_cierre, punto;// 32
+terminal String conj, trazo, dospuntos, guion, mayor, menor, puntocoma;//7
+terminal String guionbajo, coma, comilladoble, exclamacion, numeral, dolar;//13
+terminal String ampersand, comillasimple, parentesisaper, parentesiscierre; //17
+terminal String mas, porcentaje, asterisco, slash, igual, interrogacion; //23
+terminal String arroba, corcheteaper, corchetecierre, potencia, acento; //28
+terminal String barraor, llaveaper, llavecierre, punto, letra;// 32
 
 
-//no terminales
-
-non terminal INICIO;
-non terminal nodo EXPRESION;
-non terminal String PARTE1 PARTE2;
+non terminal INICIO, CONJUNTO, VALIDAR;
+non terminal Nodo EXPRESION;
+non terminal String PARTE1, PARTE2,DESCRPCONJUNTO, LISTA, LINEAEXPRESION;
 
 
 start with INICIO;
 
-INICIO::= llave_aper PARTE1 porcentaje porcentaje porcentaje porcentaje PARTE2 llave_cierre {:System.out.println("Funciono);:};
+INICIO::=llaveaper PARTE1 porcentaje porcentaje porcentaje porcentaje PARTE2 llavecierre {:System.out.println("Funciono");:};
 
-PARTE1::= PARTE1 CONJUNTO;
-           |PARTE1 LINEAEXPRESION;
+PARTE1::=PARTE1 CONJUNTO
+           |PARTE1 LINEAEXPRESION
            |CONJUNTO
            |LINEAEXPRESION
            |error;
 
-PARTE2::= PARTE2 VALIDAR 
+PARTE2::=PARTE2 VALIDAR 
            |VALIDAR
            |error;
 
-CONJUNTO::= conj dos_puntos identificador:var1 guion mayor DESCRPCONJUNTO punto_coma {:RESULT = parser.id_conjunto.add(var1);:};
-            |conj dos_puntos identificador:var1 guion mayor LISTA:var2 
+CONJUNTO::=conj dospuntos identificador:var1 guion mayor DESCRPCONJUNTO:var2 puntocoma {:RESULT = parser.conjuntos.add(new Conjunto(var1, var2));:};
+
+DESCRPCONJUNTO::=LISTA:var1         {:RESULT = var1;:}
+                  |cadenanum:var1   {:RESULT = var1;:}
+                  |cadenamin:var1   {:RESULT = var1;:}
+                  |cadenavar:var1   {:RESULT = var1;:}
+                  |cadenamayus:var1 {:RESULT = var1;:}; 
+
+LISTA::=LISTA:var1 coma:var2 letra:var3       {:RESULT= var1+var2+var3;:}
+         |LISTA:var1 coma:var2 especialc:var3 {:RESULT= var1+var2+var3;:}
+         |LISTA:var1 coma:var2 entero:var3     {:RESULT= var1+var2+var3;:}
+         |letra:var1                           {:RESULT= var1;:}
+         |entero:var1                          {:RESULT= var1;:}
+         |especialc:var1                       {:RESULT= var1;:};
 
 
-LINEAEXPRESION::= identificador:var1 guion mayor EXPRESION:var2 punto_coma {:parser.arboles.add(parser.crear_arbol(var1,var2));:};
+LINEAEXPRESION::= identificador:var1 guion mayor EXPRESION:var2 puntocoma {:parser.arboles.add(parser.crear_arbol(var1,var2));contador = 0; contador_hoja = 1;:};
 
-EXPRESION::= punto EXPRESION:var1 EXPRESION:var2         {:RESULT= new Nodo(var1,var2,parser.contador++,".",parser.contador_hoja);:};
-            |barra_or EXPRESION:var1 EXPRESION:var2      {:RESULT = new Nodo(var1,var2,parser.contador++,"|"parser.contador_hoja);:};
-            |mas EXPRESION:var1                          {:RESULT = new Nodo(var1,null,parser.contador++,"+",parser.contador_hoja);:};           
-            |asterisco ESPRESION:var1                    {:RESULT = new Nodo(var1,null,parser.contador++,"+",parser.contador_hoja);:};
-            |interrogacion EXPRESION:var1                {:RESULT = new Nodo(var1,null,parser.contador++,"+",parser.contador_hoja);:};
-            |nombre_expresion:var1                       {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
-            |cadena:var1                                 {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
-            |entero:var1                                 {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
-            |especial_c:var1                             {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
-            |llave_aper identificador:var1 llave_cierre  {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
-            |especial_c:var1                             {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja);:};
+EXPRESION::= punto EXPRESION:var1 EXPRESION:var2         {:RESULT= new Nodo(var1,var2,parser.contador++,".",parser.contador_hoja);:}
+            |barraor EXPRESION:var1 EXPRESION:var2      {:RESULT = new Nodo(var1,var2,parser.contador++,"|",parser.contador_hoja);:}
+            |mas EXPRESION:var1                          {:RESULT = new Nodo(var1,null,parser.contador++,"+",parser.contador_hoja);:}           
+            |asterisco EXPRESION:var1                    {:RESULT = new Nodo(var1,null,parser.contador++,"*",parser.contador_hoja);:}
+            |interrogacion EXPRESION:var1                {:RESULT = new Nodo(var1,null,parser.contador++,"?",parser.contador_hoja);:}
+            |nombreexpresion:var1                       {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja++);:}
+            |cadena:var1                                 {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja++);:}
+            |entero:var1                                 {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja++);:}
+            |llaveaper identificador:var1 llavecierre  {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja++);:}
+            |especialc:var1                             {:RESULT = new Nodo(parser.contador++,var1,parser.contador_hoja++);:};
+
+VALIDAR::= identificador:var1 dospuntos cadena:var2 puntocoma {:parser.lista_validar.add(new Validar(var1,var2));:};
             
-
-
